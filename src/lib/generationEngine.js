@@ -1,6 +1,6 @@
 export const generateTitles = (data) => {
-  const { brand, category, color, size, condition } = data;
-  const itemType = category.split('/').pop() || 'Articolo';
+  const { brand, category, color, size, condition, model } = data;
+  const itemType = model || category.split('/').pop() || 'Articolo';
 
   const variants = [
     `${brand} ${itemType} ${color} Taglia ${size}`,
@@ -14,8 +14,8 @@ export const generateTitles = (data) => {
 const DESCRIPTION_TEMPLATES = [
   // Template 1: Conversational
   (data) => {
-    const { brand, category, color, size, condition, measurements, defects } = data;
-    const itemType = (category.split('/').pop() || 'articolo').toLowerCase();
+    const { brand, category, color, size, condition, measurements, defects, material, model } = data;
+    const itemType = (model || category.split('/').pop() || 'articolo').toLowerCase();
 
     let text = `Ciao! Vendo questa bellissima ${itemType} di ${brand} in color ${color.toLowerCase()}.\n\n`;
 
@@ -23,6 +23,10 @@ const DESCRIPTION_TEMPLATES = [
       text += `L'articolo è nuovo con cartellino, mai indossato. Perfetto come regalo! 🎁\n\n`;
     } else {
       text += `Ho indossato questo capo solo poche volte, è in condizioni davvero ottime.\n\n`;
+    }
+
+    if (material) {
+      text += `Materiale: ${material}\n\n`;
     }
 
     if (defects) {

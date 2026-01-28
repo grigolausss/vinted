@@ -1,9 +1,12 @@
 import React, { useCallback } from 'react';
 import { useListingStore } from '../store/useListingStore';
 import { Upload, X, Camera, AlertCircle } from 'lucide-react';
+import { runFullDeepAnalysis } from '../lib/analyzer';
+import { AnalysisProgress, AnalysisSummary } from './AnalysisUI';
 
 export const PhotoUploader = () => {
-  const { photos, addPhoto, removePhoto } = useListingStore();
+  const state = useListingStore();
+  const { photos, addPhoto, removePhoto, isAnalyzing } = state;
 
   const onDrop = useCallback((e) => {
     e.preventDefault();
@@ -12,6 +15,8 @@ export const PhotoUploader = () => {
   }, []);
 
   const handleFiles = (files) => {
+    const newPhotosCount = files.filter(f => f.type.startsWith('image/')).length;
+
     files.forEach(file => {
       if (file.type.startsWith('image/')) {
         const reader = new FileReader();
@@ -21,24 +26,24 @@ export const PhotoUploader = () => {
             name: file.name,
             size: file.size,
           });
-
-          // Simulation of Auto-detect after first photo
-          if (photos.length === 0) {
-            setTimeout(() => {
-              const { setField } = useListingStore.getState();
-              setField('category', 'Donna/Sweatshirts & Hoodies');
-              setField('brand', 'Nike');
-              setField('color', 'Nero');
-            }, 1500);
-          }
         };
         reader.readAsDataURL(file);
       }
     });
+
+    // Trigger Deep Analysis after upload
+    if (newPhotosCount > 0) {
+      setTimeout(() => {
+        runFullDeepAnalysis(files, useListingStore.getState());
+      }, 500);
+    }
   };
 
   return (
     <div className="space-y-4">
+      <AnalysisProgress />
+      <AnalysisSummary />
+
       <div
         onDragOver={(e) => e.preventDefault()}
         onDrop={onDrop}

@@ -76,6 +76,10 @@ export const VintedMockup = () => {
               <span className="text-vinted-gray-medium">Taglia / Colore</span>
               <span className="font-medium">{size || '-'} / {color || '-'}</span>
             </div>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-vinted-gray-medium">Materiale</span>
+              <span className="font-medium">{useListingStore.getState().material || '-'}</span>
+            </div>
           </div>
 
           <hr className="border-gray-100 dark:border-vinted-gray-dark" />

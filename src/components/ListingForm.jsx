@@ -1,6 +1,13 @@
 import React from 'react';
 import { useListingStore } from '../store/useListingStore';
-import { ChevronDown, Sparkles } from 'lucide-react';
+import { ChevronDown, Sparkles, CheckCircle2, AlertCircle, Edit3 } from 'lucide-react';
+
+const ConfidenceIcon = ({ score }) => {
+  if (!score) return null;
+  if (score >= 0.95) return <CheckCircle2 className="text-vinted-green" size={14} />;
+  if (score >= 0.85) return <AlertCircle className="text-yellow-500" size={14} />;
+  return <AlertCircle className="text-vinted-red" size={14} />;
+};
 
 const CATEGORIES = [
   'Donna/Tops & Blouses',
@@ -31,15 +38,40 @@ const COLORS = [
 ];
 
 export const ListingForm = () => {
-  const { category, brand, size, condition, color, setField } = useListingStore();
+  const { category, brand, size, condition, color, material, model, setField, fieldConfidences } = useListingStore();
 
   return (
     <div className="space-y-6 py-4">
+      {/* Modello / Item Preciso */}
+      <div className="space-y-2">
+        <div className="flex justify-between items-center">
+          <label className="text-xs font-bold uppercase tracking-wider text-vinted-gray-medium">
+            Modello / Prodotto
+          </label>
+          <div className="flex items-center gap-1">
+            <ConfidenceIcon score={fieldConfidences.model} />
+            <button className="text-[10px] text-vinted-teal hover:underline flex items-center gap-0.5">
+              <Edit3 size={10} /> Edit
+            </button>
+          </div>
+        </div>
+        <input
+          type="text"
+          value={model}
+          onChange={(e) => setField('model', e.target.value)}
+          className="input-field text-sm font-bold"
+          placeholder="es. Nike Tech Fleece Hoodie"
+        />
+      </div>
+
       {/* Categoria */}
       <div className="space-y-2">
-        <label className="text-xs font-bold uppercase tracking-wider text-vinted-gray-medium">
-          Categoria
-        </label>
+        <div className="flex justify-between items-center">
+          <label className="text-xs font-bold uppercase tracking-wider text-vinted-gray-medium">
+            Categoria
+          </label>
+          <ConfidenceIcon score={fieldConfidences.category} />
+        </div>
         <div className="relative">
           <select
             value={category}
@@ -59,9 +91,12 @@ export const ListingForm = () => {
 
       {/* Brand */}
       <div className="space-y-2">
-        <label className="text-xs font-bold uppercase tracking-wider text-vinted-gray-medium">
-          Brand
-        </label>
+        <div className="flex justify-between items-center">
+          <label className="text-xs font-bold uppercase tracking-wider text-vinted-gray-medium">
+            Brand
+          </label>
+          <ConfidenceIcon score={fieldConfidences.brand} />
+        </div>
         <div className="relative">
           <input
             type="text"
@@ -94,9 +129,12 @@ export const ListingForm = () => {
 
         {/* Colore */}
         <div className="space-y-2">
-          <label className="text-xs font-bold uppercase tracking-wider text-vinted-gray-medium">
-            Colore
-          </label>
+          <div className="flex justify-between items-center">
+            <label className="text-xs font-bold uppercase tracking-wider text-vinted-gray-medium">
+              Colore
+            </label>
+            <ConfidenceIcon score={fieldConfidences.color} />
+          </div>
           <div className="relative">
             <select
               value={color}
@@ -111,11 +149,34 @@ export const ListingForm = () => {
         </div>
       </div>
 
+      {/* Materiale */}
+      <div className="space-y-2">
+        <div className="flex justify-between items-center">
+          <label className="text-xs font-bold uppercase tracking-wider text-vinted-gray-medium">
+            Materiale
+          </label>
+          <div className="flex items-center gap-1">
+            <ConfidenceIcon score={fieldConfidences.material} />
+            <span className="text-[9px] text-vinted-gray-medium italic">da etichetta #2</span>
+          </div>
+        </div>
+        <input
+          type="text"
+          value={material}
+          onChange={(e) => setField('material', e.target.value)}
+          className="input-field text-sm"
+          placeholder="es. 100% Cotone"
+        />
+      </div>
+
       {/* Condizione */}
       <div className="space-y-3">
-        <label className="text-xs font-bold uppercase tracking-wider text-vinted-gray-medium">
-          Condizione
-        </label>
+        <div className="flex justify-between items-center">
+          <label className="text-xs font-bold uppercase tracking-wider text-vinted-gray-medium">
+            Condizione
+          </label>
+          <ConfidenceIcon score={fieldConfidences.condition} />
+        </div>
         <div className="grid grid-cols-1 gap-2">
           {CONDITIONS.map((c) => (
             <button

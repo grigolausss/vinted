@@ -8,9 +8,11 @@ export const useListingStore = create(
   photos: [],
   category: '',
   brand: '',
+  model: '',
   size: '',
   condition: '',
   color: '',
+  material: '',
   measurements: {
     shoulder: '',
     chest: '',
@@ -20,6 +22,20 @@ export const useListingStore = create(
   defects: '',
   retailPrice: '',
   comparables: [],
+
+  // Analysis State
+  isAnalyzing: false,
+  analysisLayers: {
+    object: { status: 'idle', result: null, confidence: 0 },
+    color: { status: 'idle', result: null, confidence: 0 },
+    material: { status: 'idle', result: null, confidence: 0 },
+    condition: { status: 'idle', result: null, confidence: 0 },
+    size: { status: 'idle', result: null, confidence: 0 },
+    construction: { status: 'idle', result: null, confidence: 0 },
+    authenticity: { status: 'idle', result: null, confidence: 0 },
+    search: { status: 'idle', result: null, confidence: 0 },
+  },
+  fieldConfidences: {},
 
   // Title and Description output
   generatedTitle: '',
@@ -50,6 +66,27 @@ export const useListingStore = create(
   removeComparable: (index) => set((state) => ({
     comparables: state.comparables.filter((_, i) => i !== index)
   })),
+
+  updateAnalysisLayer: (layer, data) => set((state) => ({
+    analysisLayers: {
+      ...state.analysisLayers,
+      [layer]: { ...state.analysisLayers[layer], ...data }
+    }
+  })),
+
+  resetAnalysis: () => set({
+    isAnalyzing: false,
+    analysisLayers: {
+      object: { status: 'idle', result: null, confidence: 0 },
+      color: { status: 'idle', result: null, confidence: 0 },
+      material: { status: 'idle', result: null, confidence: 0 },
+      condition: { status: 'idle', result: null, confidence: 0 },
+      size: { status: 'idle', result: null, confidence: 0 },
+      construction: { status: 'idle', result: null, confidence: 0 },
+      authenticity: { status: 'idle', result: null, confidence: 0 },
+      search: { status: 'idle', result: null, confidence: 0 },
+    }
+  }),
 
   history: [],
   saveToHistory: () => {
