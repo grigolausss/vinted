@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased text-vinted-gray-medium dark:text-gray-200 bg-white dark:bg-vinted-dark;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-black dark:text-white font-semibold;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-vinted-teal text-white px-4 py-2 rounded-apple font-medium transition-all hover:scale-[1.02] active:scale-[0.98] hover:shadow-apple-hover;
+  }
+
+  .btn-secondary {
+    @apply bg-vinted-gray-light dark:bg-vinted-gray-dark text-black dark:text-white px-4 py-2 rounded-apple font-medium transition-all hover:scale-[1.02] active:scale-[0.98];
+  }
+
+  .input-field {
+    @apply w-full px-3 py-2 border border-gray-200 dark:border-vinted-gray-dark rounded-apple bg-white dark:bg-vinted-gray-dark focus:border-vinted-teal focus:ring-2 focus:ring-vinted-teal/10 outline-none transition-all;
+  }
+}
