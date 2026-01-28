@@ -21,6 +21,16 @@ export const PhotoUploader = () => {
             name: file.name,
             size: file.size,
           });
+
+          // Simulation of Auto-detect after first photo
+          if (photos.length === 0) {
+            setTimeout(() => {
+              const { setField } = useListingStore.getState();
+              setField('category', 'Donna/Sweatshirts & Hoodies');
+              setField('brand', 'Nike');
+              setField('color', 'Nero');
+            }, 1500);
+          }
         };
         reader.readAsDataURL(file);
       }
