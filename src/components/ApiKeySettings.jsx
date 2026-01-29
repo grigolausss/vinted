@@ -62,7 +62,26 @@ export const ApiKeySettings = () => {
             </>
           )}
         </button>
+
+        <button
+          onClick={() => {
+            setApiKey('DEMO_MODE');
+            setTempKey('DEMO_MODE');
+          }}
+          className="w-full py-2 rounded-apple text-[10px] font-bold border border-vinted-teal/30 text-vinted-teal hover:bg-vinted-teal/5 transition-all"
+        >
+          Attiva Modalità Demo (Nessuna Key richiesta)
+        </button>
       </div>
+
+      {apiKey === 'DEMO_MODE' && (
+        <div className="flex items-start gap-2 p-3 bg-vinted-teal/5 rounded-apple border border-vinted-teal/10">
+          <CheckCircle2 className="text-vinted-teal shrink-0" size={14} />
+          <p className="text-[10px] text-vinted-teal font-medium">
+            Modalità Demo Attiva. L'analisi foto userà dati simulati di alta qualità.
+          </p>
+        </div>
+      )}
 
       {!apiKey && (
         <div className="flex items-start gap-2 p-3 bg-vinted-red/5 rounded-apple border border-vinted-red/10">

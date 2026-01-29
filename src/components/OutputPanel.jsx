@@ -18,6 +18,12 @@ export const OutputPanel = () => {
   const handleCopy = (text, key) => {
     navigator.clipboard.writeText(text);
     setCopyStatus({ ...copyStatus, [key]: true });
+
+    // Save to history on first successful copy
+    if (key === 'all' || key === 'title' || key === 'desc') {
+      state.saveToHistory();
+    }
+
     setTimeout(() => setCopyStatus({ ...copyStatus, [key]: false }), 2000);
   };
 

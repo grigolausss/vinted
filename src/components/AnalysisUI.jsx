@@ -25,7 +25,7 @@ const LAYER_LABELS = {
 };
 
 export const AnalysisProgress = () => {
-  const { analysisLayers, isAnalyzing, analysisError } = useListingStore();
+  const { analysisLayers, isAnalyzing, analysisError, apiKey } = useListingStore();
 
   if (!isAnalyzing && !analysisError && Object.values(analysisLayers).every(l => l.status === 'idle')) return null;
 
@@ -50,12 +50,12 @@ export const AnalysisProgress = () => {
           {isAnalyzing ? (
             <>
               <Loader2 className="animate-spin text-vinted-teal" size={18} />
-              Analisi Profonda in corso...
+              {apiKey === 'DEMO_MODE' ? 'Simulazione Analisi (Demo)...' : 'Analisi Profonda in corso...'}
             </>
           ) : (
             <>
               <CheckCircle2 className="text-vinted-green" size={18} />
-              Analisi Completata
+              Analisi Completata {apiKey === 'DEMO_MODE' && '(MODALITÀ DEMO)'}
             </>
           )}
         </h3>
