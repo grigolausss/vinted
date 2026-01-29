@@ -55,6 +55,7 @@ export const runFullDeepAnalysis = async (photos, store) => {
 
   } catch (error) {
     console.error("Deep analysis failed:", error);
+    store.setField('analysisError', error.message || "Errore durante l'analisi");
   } finally {
     store.setField('isAnalyzing', false);
   }

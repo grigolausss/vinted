@@ -25,12 +25,26 @@ const LAYER_LABELS = {
 };
 
 export const AnalysisProgress = () => {
-  const { analysisLayers, isAnalyzing } = useListingStore();
+  const { analysisLayers, isAnalyzing, analysisError } = useListingStore();
 
-  if (!isAnalyzing && Object.values(analysisLayers).every(l => l.status === 'idle')) return null;
+  if (!isAnalyzing && !analysisError && Object.values(analysisLayers).every(l => l.status === 'idle')) return null;
 
   return (
-    <div className="bg-white dark:bg-vinted-gray-dark/50 border border-gray-100 dark:border-vinted-gray-dark rounded-apple-lg p-5 space-y-4 shadow-apple">
+    <div className="bg-white dark:bg-vinted-gray-dark/50 border border-gray-100 dark:border-vinted-gray-dark rounded-apple-lg p-5 space-y-4 shadow-apple relative overflow-hidden">
+      {analysisError && (
+        <div className="absolute inset-0 bg-vinted-red/10 backdrop-blur-[1px] flex items-center justify-center p-6 text-center z-10 animate-in fade-in duration-300">
+          <div className="space-y-2">
+            <div className="text-vinted-red font-bold text-sm">Errore Analisi</div>
+            <p className="text-[11px] text-vinted-red leading-relaxed">{analysisError}</p>
+            <button
+              onClick={() => useListingStore.getState().resetAnalysis()}
+              className="text-[10px] font-bold uppercase tracking-wider text-white bg-vinted-red px-3 py-1 rounded-full hover:bg-vinted-red/90 transition-colors"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-bold flex items-center gap-2">
           {isAnalyzing ? (

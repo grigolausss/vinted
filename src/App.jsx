@@ -4,6 +4,8 @@ import { PhotoUploader } from './components/PhotoUploader';
 import { ApiKeySettings } from './components/ApiKeySettings';
 import { ListingForm } from './components/ListingForm';
 import { AdvancedDetails } from './components/AdvancedDetails';
+import { CompletionBar } from './components/CompletionBar';
+import { PreferencesSection } from './components/PreferencesSection';
 import { VintedMockup } from './components/VintedMockup';
 import { OutputPanel } from './components/OutputPanel';
 import { HistoryPanel } from './components/HistoryPanel';
@@ -15,21 +17,6 @@ import { Sparkles, Info, ShieldAlert } from 'lucide-react';
 function App() {
   const state = useListingStore();
   useKeyboardShortcuts();
-
-  // Real-time generation effect
-  useEffect(() => {
-    if (state.brand && state.category && state.photos.length > 0) {
-      const titles = generateTitles(state);
-      const desc = generateDescription(state, 0);
-      const kws = extractKeywords(state);
-      const price = calculateSuggestedPrice(state);
-
-      state.setField('generatedTitle', titles[0]);
-      state.setField('generatedDescription', desc);
-      state.setField('generatedKeywords', kws);
-      state.setField('suggestedPrice', price);
-    }
-  }, [state.brand, state.category, state.size, state.condition, state.color, state.photos, state.comparables, state.defects, state.measurements]);
 
   const warnings = runComplianceChecks(state);
 
@@ -53,6 +40,8 @@ function App() {
       <main className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-[380px_1fr_400px] gap-8 items-start">
         {/* LEFT COLUMN: Input */}
         <div className="space-y-6 bg-white dark:bg-vinted-gray-dark/20 p-6 rounded-[24px] border border-gray-100 dark:border-vinted-gray-dark shadow-apple overflow-y-auto max-h-[calc(100vh-160px)] no-scrollbar">
+          <CompletionBar />
+
           <section>
             <ApiKeySettings />
           </section>
@@ -69,6 +58,10 @@ function App() {
 
           <section>
             <AdvancedDetails />
+          </section>
+
+          <section>
+            <PreferencesSection />
           </section>
 
           <section className="pt-4">

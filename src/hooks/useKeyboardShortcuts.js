@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useListingStore } from '../store/useListingStore';
+import { exportToJSON, exportToCSV } from '../lib/exporter';
 
 export const useKeyboardShortcuts = () => {
   const state = useListingStore();
@@ -23,13 +24,16 @@ export const useKeyboardShortcuts = () => {
         }
       }
 
-      // Cmd/Ctrl + S: Save to History
+      // Cmd/Ctrl + S: Save as JSON
       if ((e.metaKey || e.ctrlKey) && e.key === 's') {
         e.preventDefault();
-        if (state.generatedTitle) {
-          state.saveToHistory();
-          console.log('Salvato in cronologia via shortcut');
-        }
+        exportToJSON(state);
+      }
+
+      // Cmd/Ctrl + E: Export as CSV
+      if ((e.metaKey || e.ctrlKey) && e.key === 'e') {
+        e.preventDefault();
+        exportToCSV(state);
       }
     };
 

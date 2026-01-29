@@ -6,13 +6,14 @@ import { exportToJSON, exportToCSV } from '../lib/exporter';
 export const OutputPanel = () => {
   const state = useListingStore();
   const {
-    generatedTitle, generatedDescription, generatedKeywords,
-    suggestedPrice, brand, category, photos, resetForm, analysisLayers
+    generatedTitle, generatedTitles, generatedDescription, generatedKeywords,
+    suggestedPrice, brand, category, photos, resetForm, analysisLayers, setField
   } = state;
 
   const searchLayer = analysisLayers.search || {};
 
   const [copyStatus, setCopyStatus] = useState({ title: false, desc: false, all: false });
+  const [showAllTitles, setShowAllTitles] = useState(false);
 
   const handleCopy = (text, key) => {
     navigator.clipboard.writeText(text);
@@ -44,7 +45,7 @@ export const OutputPanel = () => {
               <label className="text-[10px] font-bold uppercase tracking-widest text-vinted-gray-medium">Titolo Consigliato</label>
               <button
                 onClick={() => handleCopy(generatedTitle, 'title')}
-                className="text-[10px] text-vinted-teal flex items-center gap-1 hover:underline"
+                className={`text-[10px] flex items-center gap-1 hover:underline transition-colors ${copyStatus.title ? 'copy-success' : 'text-vinted-teal'}`}
               >
                 {copyStatus.title ? <Check size={10} /> : <Copy size={10} />}
                 {copyStatus.title ? 'Copiato' : 'Copia'}
@@ -53,6 +54,44 @@ export const OutputPanel = () => {
             <div className="p-3 bg-white dark:bg-vinted-gray-dark border border-gray-100 dark:border-vinted-gray-dark rounded-apple font-medium text-sm">
               {generatedTitle || 'In attesa di generazione...'}
             </div>
+
+            {generatedTitles && generatedTitles.length > 1 && (
+              <div className="mt-1">
+                <button
+                  onClick={() => setShowAllTitles(!showAllTitles)}
+                  className="text-[9px] font-bold text-vinted-gray-medium hover:text-vinted-teal transition-colors flex items-center gap-1 uppercase tracking-tighter"
+                >
+                  {showAllTitles ? 'Nascondi varianti' : 'Mostra altre varianti titolo'}
+                  <span className={`transform transition-transform ${showAllTitles ? 'rotate-180' : ''}`}>▼</span>
+                </button>
+
+                {showAllTitles && (
+                  <div className="mt-2 space-y-2 animate-in slide-in-from-top-1 duration-200">
+                    {generatedTitles.map((title, idx) => (
+                      <div
+                        key={idx}
+                        className={`p-2 rounded border cursor-pointer transition-all flex justify-between items-center group ${
+                          title === generatedTitle
+                          ? 'border-vinted-teal bg-vinted-teal/5'
+                          : 'border-gray-100 dark:border-vinted-gray-dark bg-gray-50/50 dark:bg-white/5 hover:border-vinted-teal/30'
+                        }`}
+                        onClick={() => setField('generatedTitle', title)}
+                      >
+                        <span className="text-[11px] font-medium">{title}</span>
+                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleCopy(title, `title-${idx}`); }}
+                            className="p-1 text-vinted-teal hover:bg-vinted-teal/10 rounded"
+                          >
+                            <Copy size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Description Output */}
@@ -61,7 +100,7 @@ export const OutputPanel = () => {
               <label className="text-[10px] font-bold uppercase tracking-widest text-vinted-gray-medium">Descrizione Completa</label>
               <button
                 onClick={() => handleCopy(generatedDescription, 'desc')}
-                className="text-[10px] text-vinted-teal flex items-center gap-1 hover:underline"
+                className={`text-[10px] flex items-center gap-1 hover:underline transition-colors ${copyStatus.desc ? 'copy-success' : 'text-vinted-teal'}`}
               >
                 {copyStatus.desc ? <Check size={10} /> : <Copy size={10} />}
                 {copyStatus.desc ? 'Copiato' : 'Copia'}

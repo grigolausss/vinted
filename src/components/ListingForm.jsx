@@ -72,7 +72,7 @@ export const ListingForm = () => {
           <label className="text-xs font-bold uppercase tracking-wider text-vinted-gray-medium">
             Categoria
           </label>
-          <ConfidenceIcon score={fieldConfidences.category} />
+          <ConfidenceIcon score={fieldConfidences.category} isVerified={searchResults.verified} />
         </div>
         <div className="relative">
           <select

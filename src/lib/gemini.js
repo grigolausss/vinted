@@ -20,8 +20,8 @@ const fileToGenerativePart = async (file) => {
 };
 
 export const analyzePhotoDeeply = async (photos, onProgress, apiKey) => {
-  if (!apiKey) {
-    throw new Error("API Key mancante. Inseriscila nelle impostazioni.");
+  if (!apiKey || apiKey.trim() === '') {
+    throw new Error("⚠️ API Key di Gemini mancante. Inseriscila nel pannello 'Configurazione AI' per abilitare l'analisi reale.");
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
@@ -121,6 +121,10 @@ export const analyzePhotoDeeply = async (photos, onProgress, apiKey) => {
  * Enrichment layer: Searches for official product data and Vinted comparables
  */
 export const enrichDataWithOnlineSearch = async (extractedData, onProgress) => {
+  if (!extractedData || Object.keys(extractedData).length === 0) {
+    onProgress('search', { status: 'error', result: 'Dati insufficienti per la ricerca' });
+    return null;
+  }
   onProgress('search', { status: 'analyzing' });
 
   // Simulate network latency for "Search"

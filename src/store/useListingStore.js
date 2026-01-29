@@ -24,6 +24,13 @@ export const useListingStore = create(
   retailPrice: '',
   comparables: [],
 
+  // Preferences (Phase 2.4)
+  descriptionStyle: 0, // 0: Umano, 1: Secco, 2: Misto
+  emojiLevel: 2, // 0: No, 1: Min, 2: Med, 3: Max
+  offerPolicy: '-10%',
+  outputLanguage: 'it',
+  variationActive: true,
+
   // Analysis State
   isAnalyzing: false,
   analysisLayers: {
@@ -37,9 +44,11 @@ export const useListingStore = create(
     search: { status: 'idle', result: null, confidence: 0 },
   },
   fieldConfidences: {},
+  analysisError: null,
 
   // Title and Description output
   generatedTitle: '',
+  generatedTitles: [],
   generatedDescription: '',
   generatedKeywords: [],
   suggestedPrice: null,
@@ -75,12 +84,13 @@ export const useListingStore = create(
       defects: state.defects
     };
 
-    const titles = generateTitles(data);
-    const description = generateDescription(data);
+    const titles = generateTitles({ ...data, emojiLevel: state.emojiLevel, style: state.descriptionStyle });
+    const description = generateDescription({ ...data, emojiLevel: state.emojiLevel, style: state.descriptionStyle });
     const keywords = extractKeywords(data);
 
     set({
       generatedTitle: titles[0],
+      generatedTitles: titles,
       generatedDescription: description,
       generatedKeywords: keywords
     });
@@ -113,6 +123,7 @@ export const useListingStore = create(
 
   resetAnalysis: () => set({
     isAnalyzing: false,
+    analysisError: null,
     analysisLayers: {
       object: { status: 'idle', result: null, confidence: 0 },
       color: { status: 'idle', result: null, confidence: 0 },
@@ -152,6 +163,7 @@ export const useListingStore = create(
     retailPrice: '',
     comparables: [],
     generatedTitle: '',
+  generatedTitles: [],
     generatedDescription: '',
     generatedKeywords: [],
     suggestedPrice: null,
