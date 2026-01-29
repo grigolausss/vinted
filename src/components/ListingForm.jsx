@@ -2,7 +2,8 @@ import React from 'react';
 import { useListingStore } from '../store/useListingStore';
 import { ChevronDown, Sparkles, CheckCircle2, AlertCircle, Edit3 } from 'lucide-react';
 
-const ConfidenceIcon = ({ score }) => {
+const ConfidenceIcon = ({ score, isVerified }) => {
+  if (isVerified) return <CheckCircle2 className="text-vinted-teal" size={14} title="Verificato Online" />;
   if (!score) return null;
   if (score >= 0.95) return <CheckCircle2 className="text-vinted-green" size={14} />;
   if (score >= 0.85) return <AlertCircle className="text-yellow-500" size={14} />;
@@ -38,7 +39,8 @@ const COLORS = [
 ];
 
 export const ListingForm = () => {
-  const { category, brand, size, condition, color, material, model, setField, fieldConfidences } = useListingStore();
+  const { category, brand, size, condition, color, material, model, setField, fieldConfidences, analysisLayers } = useListingStore();
+  const searchResults = analysisLayers.search?.extra || {};
 
   return (
     <div className="space-y-6 py-4">
@@ -95,7 +97,7 @@ export const ListingForm = () => {
           <label className="text-xs font-bold uppercase tracking-wider text-vinted-gray-medium">
             Brand
           </label>
-          <ConfidenceIcon score={fieldConfidences.brand} />
+          <ConfidenceIcon score={fieldConfidences.brand} isVerified={searchResults.verified} />
         </div>
         <div className="relative">
           <input

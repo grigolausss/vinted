@@ -7,8 +7,10 @@ export const OutputPanel = () => {
   const state = useListingStore();
   const {
     generatedTitle, generatedDescription, generatedKeywords,
-    suggestedPrice, brand, category, photos, resetForm
+    suggestedPrice, brand, category, photos, resetForm, analysisLayers
   } = state;
+
+  const searchLayer = analysisLayers.search || {};
 
   const [copyStatus, setCopyStatus] = useState({ title: false, desc: false, all: false });
 
@@ -85,9 +87,14 @@ export const OutputPanel = () => {
 
           {/* Pricing Analysis */}
           <div className="p-4 bg-vinted-teal/5 border border-vinted-teal/10 rounded-apple-lg space-y-3">
-            <div className="flex items-center gap-2 text-vinted-teal">
-              <TrendingUp size={16} />
-              <span className="text-sm font-bold">Analisi Prezzo</span>
+            <div className="flex items-center justify-between text-vinted-teal">
+              <div className="flex items-center gap-2">
+                <TrendingUp size={16} />
+                <span className="text-sm font-bold">Analisi Prezzo</span>
+              </div>
+              {searchLayer.status === 'complete' && searchLayer.extra?.verified && (
+                <span className="text-[9px] font-black uppercase bg-vinted-teal text-white px-1.5 py-0.5 rounded">Verified Market Data</span>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>

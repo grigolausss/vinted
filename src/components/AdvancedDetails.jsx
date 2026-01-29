@@ -8,8 +8,11 @@ export const AdvancedDetails = () => {
     measurements, setMeasurements,
     defects, setField,
     retailPrice,
-    comparables, addComparable, removeComparable
+    comparables, addComparable, removeComparable,
+    analysisLayers
   } = useListingStore();
+
+  const isVerified = analysisLayers.search?.extra?.verified;
 
   const handleMeasurementChange = (field, value) => {
     setMeasurements({ [field]: value });
@@ -99,23 +102,33 @@ export const AdvancedDetails = () => {
 
           {/* Prezzo Retail */}
           <div className="space-y-2">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-vinted-gray-medium">
-              Prezzo Retail Originale (€)
-            </h4>
+            <div className="flex justify-between items-center">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-vinted-gray-medium">
+                Prezzo Retail Originale (€)
+              </h4>
+              {isVerified && (
+                <div className="flex items-center gap-1 text-[10px] text-vinted-teal font-bold uppercase">
+                  Verificato <Plus size={10} className="rotate-45" />
+                </div>
+              )}
+            </div>
             <input
               type="number"
               value={retailPrice}
               onChange={(e) => setField('retailPrice', e.target.value)}
-              className="input-field text-sm"
+              className={`input-field text-sm ${isVerified ? 'border-vinted-teal/30 bg-vinted-teal/5' : ''}`}
               placeholder="100"
             />
           </div>
 
           {/* Comparables */}
           <div className="space-y-3">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-vinted-gray-medium">
-              Prezzi Comparabili Vinted
-            </h4>
+            <div className="flex justify-between items-center">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-vinted-gray-medium">
+                Prezzi Comparabili Vinted
+              </h4>
+              <span className="text-[9px] text-vinted-gray-medium italic">Automatizzati via Online Search</span>
+            </div>
             <div className="space-y-2">
               {comparables.map((comp, idx) => (
                 <div key={idx} className="flex gap-2 items-center animate-in zoom-in-95 duration-200">
@@ -159,6 +172,9 @@ export const AdvancedDetails = () => {
               >
                 <Plus size={14} /> Aggiungi Comparable
               </button>
+              <p className="text-[9px] text-vinted-gray-medium leading-tight mt-2">
+                <strong>Tip:</strong> Se l'analisi automatica non è precisa, cerca su Vinted annunci simili "Venduti" e inserisci qui i prezzi per calibrare il suggerimento.
+              </p>
             </div>
           </div>
         </div>

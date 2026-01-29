@@ -14,9 +14,10 @@ export const runFullDeepAnalysis = async (photos, store) => {
       store.updateAnalysisLayer(layer, data);
     });
 
-    const visionData = searchResults.extra;
+    const visionData = visionResults.search.extra;
+    const searchData = searchResults;
 
-    // Auto-populate the form based on REAL analysis
+    // Auto-populate the form based on REAL analysis + Enrichment
     store.setField('category', visionData.category || '');
     store.setField('brand', visionData.brand || '');
     store.setField('model', visionData.model || visionResults.object.result);
@@ -24,10 +25,18 @@ export const runFullDeepAnalysis = async (photos, store) => {
     store.setField('material', visionData.material || visionResults.material.result);
     store.setField('size', visionData.size || '');
     store.setField('condition', visionData.condition || 'very_good');
-    store.setField('retailPrice', searchResults.retailPrice);
-    store.setField('suggestedPrice', searchResults.suggestedRange[0]);
-    store.setField('comparables', searchResults.comparables);
+    store.setField('retailPrice', searchData.retailPrice || '');
+    store.setField('comparables', searchData.comparables);
     store.setField('defects', visionData.defects || 'Nessuno');
+
+    // Calculate suggested price based on market average from enrichment
+    if (searchData.marketAvg) {
+      store.setField('suggestedPrice', calculateSuggestedPrice({
+        comparables: searchData.comparables,
+        condition: visionData.condition || 'very_good',
+        retailPrice: searchData.retailPrice
+      }));
+    }
 
     // Store field confidences for UI indicators
     const confidences = {
@@ -76,8 +85,15 @@ export const calculateSuggestedPrice = (data) => {
 };
 
 export const runComplianceChecks = (data) => {
-  const { photos, condition, comparables, suggestedPrice } = data;
+  const { photos, condition, comparables, suggestedPrice, analysisLayers } = data;
   const warnings = [];
+
+  // Add enrichment warnings if search layer is complete
+  if (analysisLayers.search?.status === 'complete' && analysisLayers.search.extra?.warnings) {
+    analysisLayers.search.extra.warnings.forEach(w => {
+      warnings.push({ id: 'search_warning', type: 'warning', message: w });
+    });
+  }
 
   if (condition === 'bnwt') {
     warnings.push({
