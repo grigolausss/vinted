@@ -4,7 +4,7 @@ import { ChevronLeft, MoreVertical, Heart, MessageCircle, Share2, ShieldCheck, U
 
 export const VintedMockup = () => {
   const {
-    photos, category, brand, size, condition, color,
+    photos, category, brand, size, condition, color, material,
     generatedTitle, suggestedPrice, generatedDescription
   } = useListingStore();
 
@@ -78,7 +78,7 @@ export const VintedMockup = () => {
             </div>
             <div className="flex justify-between items-center text-sm">
               <span className="text-vinted-gray-medium">Materiale</span>
-              <span className="font-medium">{useListingStore.getState().material || '-'}</span>
+              <span className="font-medium">{material || '-'}</span>
             </div>
           </div>
 

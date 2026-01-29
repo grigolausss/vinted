@@ -5,36 +5,39 @@ export const runFullDeepAnalysis = async (photos, store) => {
   store.resetAnalysis();
 
   try {
+    const apiKey = store.apiKey;
     const visionResults = await analyzePhotoDeeply(photos, (layer, data) => {
       store.updateAnalysisLayer(layer, data);
-    });
+    }, apiKey);
 
     const searchResults = await verifyOnline(visionResults, (layer, data) => {
       store.updateAnalysisLayer(layer, data);
     });
 
-    // Auto-populate the form based on analysis
-    store.setField('category', 'Donna/Sweatshirts & Hoodies');
-    store.setField('brand', 'Nike');
-    store.setField('model', visionResults.object.result);
-    store.setField('color', 'Nero');
-    store.setField('material', visionResults.material.result);
-    store.setField('size', 'M');
-    store.setField('condition', 'very_good');
+    const visionData = searchResults.extra;
+
+    // Auto-populate the form based on REAL analysis
+    store.setField('category', visionData.category || '');
+    store.setField('brand', visionData.brand || '');
+    store.setField('model', visionData.model || visionResults.object.result);
+    store.setField('color', visionData.color || '');
+    store.setField('material', visionData.material || visionResults.material.result);
+    store.setField('size', visionData.size || '');
+    store.setField('condition', visionData.condition || 'very_good');
     store.setField('retailPrice', searchResults.retailPrice);
     store.setField('suggestedPrice', searchResults.suggestedRange[0]);
     store.setField('comparables', searchResults.comparables);
-    store.setField('defects', 'Micro sfregamento spalla sx, minimal pilling petto');
+    store.setField('defects', visionData.defects || 'Nessuno');
 
     // Store field confidences for UI indicators
     const confidences = {
-      category: 0.92,
-      brand: 0.94,
-      model: 0.94,
-      color: 0.98,
-      material: 0.98,
-      size: 0.96,
-      condition: 0.88,
+      category: visionResults.object.confidence,
+      brand: visionResults.authenticity.confidence,
+      model: visionResults.object.confidence,
+      color: visionResults.color.confidence,
+      material: visionResults.material.confidence,
+      size: visionResults.size.confidence,
+      condition: visionResults.condition.confidence,
       defects: 0.90,
       retailPrice: 0.95,
       suggestedPrice: 0.93,

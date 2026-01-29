@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useListingStore } from './store/useListingStore';
 import { PhotoUploader } from './components/PhotoUploader';
+import { ApiKeySettings } from './components/ApiKeySettings';
 import { ListingForm } from './components/ListingForm';
 import { AdvancedDetails } from './components/AdvancedDetails';
 import { VintedMockup } from './components/VintedMockup';
@@ -52,6 +53,10 @@ function App() {
       <main className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-[380px_1fr_400px] gap-8 items-start">
         {/* LEFT COLUMN: Input */}
         <div className="space-y-6 bg-white dark:bg-vinted-gray-dark/20 p-6 rounded-[24px] border border-gray-100 dark:border-vinted-gray-dark shadow-apple overflow-y-auto max-h-[calc(100vh-160px)] no-scrollbar">
+          <section>
+            <ApiKeySettings />
+          </section>
+
           <section>
             <h3 className="text-xs font-bold uppercase tracking-widest text-vinted-gray-medium mb-4">1. Foto del Prodotto</h3>
             <PhotoUploader />

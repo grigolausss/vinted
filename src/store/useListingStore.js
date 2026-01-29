@@ -1,10 +1,11 @@
 import { create } from 'zustand';
-
 import { persist, createJSONStorage } from 'zustand/middleware';
+import { generateTitles, generateDescription, extractKeywords } from '../lib/generationEngine';
 
 export const useListingStore = create(
   persist(
     (set, get) => ({
+  apiKey: '',
   photos: [],
   category: '',
   brand: '',
@@ -43,11 +44,47 @@ export const useListingStore = create(
   generatedKeywords: [],
   suggestedPrice: null,
 
-  setField: (field, value) => set((state) => ({ [field]: value })),
+  setApiKey: (key) => set({ apiKey: key }),
 
-  setMeasurements: (measurements) => set((state) => ({
-    measurements: { ...state.measurements, ...measurements }
-  })),
+  setField: (field, value) => {
+    set((state) => ({ [field]: value }));
+    get().regenerateListing();
+  },
+
+  setMeasurements: (measurements) => {
+    set((state) => ({
+      measurements: { ...state.measurements, ...measurements }
+    }));
+    get().regenerateListing();
+  },
+
+  regenerateListing: () => {
+    const state = get();
+    // Only generate if we have at least brand or category
+    if (!state.brand && !state.category) return;
+
+    const data = {
+      brand: state.brand,
+      category: state.category,
+      model: state.model,
+      size: state.size,
+      condition: state.condition,
+      color: state.color,
+      material: state.material,
+      measurements: state.measurements,
+      defects: state.defects
+    };
+
+    const titles = generateTitles(data);
+    const description = generateDescription(data);
+    const keywords = extractKeywords(data);
+
+    set({
+      generatedTitle: titles[0],
+      generatedDescription: description,
+      generatedKeywords: keywords
+    });
+  },
 
   addPhoto: (photo) => set((state) => ({
     photos: [...state.photos, photo].slice(0, 12)
@@ -105,9 +142,11 @@ export const useListingStore = create(
     photos: [],
     category: '',
     brand: '',
+    model: '',
     size: '',
     condition: '',
     color: '',
+    material: '',
     measurements: { shoulder: '', chest: '', length: '', sleeve: '' },
     defects: '',
     retailPrice: '',
@@ -116,11 +155,16 @@ export const useListingStore = create(
     generatedDescription: '',
     generatedKeywords: [],
     suggestedPrice: null,
+    isAnalyzing: false,
+    fieldConfidences: {},
   }),
 }),
 {
   name: 'vinted-listing-storage',
   storage: createJSONStorage(() => localStorage),
-  partialize: (state) => ({ history: state.history }), // Only persist history
+  partialize: (state) => ({
+    history: state.history,
+    apiKey: state.apiKey // Persist API Key
+  }),
 }
 ));
