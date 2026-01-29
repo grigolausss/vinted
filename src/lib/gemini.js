@@ -25,7 +25,8 @@ export const analyzePhotoDeeply = async (photos, onProgress, apiKey) => {
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  // Using v1 instead of v1beta for better regional stability and gemini-1.5-flash support
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }, { apiVersion: 'v1' });
 
   const layers = [
     { id: 'object', label: 'Layer 1: Identificazione Oggetto' },
@@ -57,7 +58,20 @@ export const analyzePhotoDeeply = async (photos, onProgress, apiKey) => {
 
     Non aggiungere commenti o testo extra fuori dal JSON.`;
 
-    const result = await model.generateContent([prompt, imagePart]);
+    let result;
+    try {
+      result = await model.generateContent([prompt, imagePart]);
+    } catch (apiError) {
+      // Fallback to gemini-1.5-flash-latest if gemini-1.5-flash fails (some regions/keys)
+      if (apiError.message?.includes('404') || apiError.message?.includes('not found')) {
+        console.log("Model gemini-1.5-flash failed, trying gemini-1.5-flash-latest...");
+        const fallbackModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" }, { apiVersion: 'v1' });
+        result = await fallbackModel.generateContent([prompt, imagePart]);
+      } else {
+        throw apiError;
+      }
+    }
+
     const response = await result.response;
     const text = response.text();
 
@@ -112,8 +126,12 @@ export const analyzePhotoDeeply = async (photos, onProgress, apiKey) => {
     return results;
   } catch (error) {
     console.error("AI Analysis Error:", error);
-    layers.forEach(l => onProgress(l.id, { status: 'error', result: 'Errore durante l\'analisi' }));
-    throw error;
+    let errorMsg = error.message || "Errore durante l'analisi";
+    if (errorMsg.includes('404')) {
+      errorMsg = "Modello Gemini non trovato. Assicurati che il tuo account abbia accesso a Gemini 1.5 Flash e che la chiave API sia corretta. Se sei in Europa, verifica le limitazioni regionali di Google AI Studio.";
+    }
+    layers.forEach(l => onProgress(l.id, { status: 'error', result: 'Errore' }));
+    throw new Error(errorMsg);
   }
 };
 
